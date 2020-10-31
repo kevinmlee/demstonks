@@ -8,6 +8,7 @@ puppeteer.use(StealthPlugin());
 const AdblockerPlugin = require("puppeteer-extra-plugin-adblocker");
 puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
 const Discord = require("discord.js");
+const app = require('./src/util/keepHerokuAlive');
 
 const webhookClientRobot = new Discord.WebhookClient(
   process.env.DEMSTONKS_CLIENT_ID,
