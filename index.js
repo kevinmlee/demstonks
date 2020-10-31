@@ -7,6 +7,7 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 puppeteer.use(StealthPlugin());
 const AdblockerPlugin = require("puppeteer-extra-plugin-adblocker");
 puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
+const logger = require("morgan");
 const express = require("express");
 const bodyParser = require("body-parser");
 var cors = require("cors");
