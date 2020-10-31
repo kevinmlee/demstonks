@@ -1,5 +1,5 @@
 {
-  "name": "nvidiascraper",
+  "name": "stonkbot",
   "version": "1.0.0",
   "description": "Just a little fun thing.",
   "main": "index.js",
@@ -7,10 +7,11 @@
     "nvidia": "./index.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "server": "node server.js",
+    "start": "npm run server",
+    "heroku-postbuild": "npm run build"
   },
-  "author": "Stefan Tolksdorf",
+  "author": "Kevin Lee",
   "license": "MIT",
   "dependencies": {
     "cron": "^1.8.2",
