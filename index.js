@@ -11,7 +11,6 @@ const logger = require("morgan");
 const express = require("express");
 const bodyParser = require("body-parser");
 var cors = require("cors");
-const http = require("http");
 const Discord = require("discord.js");
 
 const webhookClientRobot = new Discord.WebhookClient(
@@ -217,32 +216,6 @@ webhookClientReactionListener.on("message", (message) => {
 webhookClientReactionListener.once("ready", () => {
   console.log("stonkbot ready to annoy people!");
 });
-
-function startKeepAlive() {
-  setInterval(function () {
-    var options = {
-      host: "demstonks.herokuapp.com",
-      port: 80,
-      path: "/",
-    };
-    http
-      .get(options, function (res) {
-        res.on("data", function (chunk) {
-          try {
-            // optional logging... disable after it's working
-            console.log("HEROKU RESPONSE: " + chunk);
-          } catch (err) {
-            console.log(err.message);
-          }
-        });
-      })
-      .on("error", function (err) {
-        console.log("Error: " + err.message);
-      });
-  }, 20 * 60 * 1000); // load every 20 minutes
-}
-
-startKeepAlive();
 
 // initialize
 webhookClientReactionListener.login(process.env.DEMSTONKS_BOT_APP_TOKEN);
