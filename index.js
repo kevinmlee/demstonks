@@ -107,14 +107,16 @@ const jobHeartbeat = new CronJob({
       .setTimestamp()
       .setDescription(message)
       .setColor("#0099ff");
+    /*
     await webhookClientHeartbeat.send("", {
       username: "stonkbot",
       avatarURL: "https://duckduckgo.com/i/46055555.png",
       embeds: [embed],
     });
+    */
   },
-  start: false,
-  runOnInit: false,
+  start: true,
+  runOnInit: true,
 });
 
 /*
