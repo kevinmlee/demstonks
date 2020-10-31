@@ -7,6 +7,9 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 puppeteer.use(StealthPlugin());
 const AdblockerPlugin = require("puppeteer-extra-plugin-adblocker");
 puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
+const express = require("express");
+const bodyParser = require("body-parser");
+var cors = require("cors");
 const Discord = require("discord.js");
 
 const webhookClientRobot = new Discord.WebhookClient(
@@ -20,6 +23,16 @@ const webhookClientHeartbeat = new Discord.WebhookClient(
   process.env.DEMSTONKS_HEARTBEAT_ID,
   process.env.DEMSTONKS_HEARTBEAT_TOKEN
 );
+
+const port = process.env.PORT || 5000;
+const app = express();
+
+// bodyParser, parses the request body to be a readable json format
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(logger("dev"));
+app.use(cors());
+app.options("*", cors());
 
 const scrape = (url) => {
   return new Promise(async (resolve, reject) => {
@@ -238,3 +251,5 @@ webhookClientReactionListener.once("ready", () => {
 webhookClientReactionListener.login(process.env.DEMSTONKS_BOT_APP_TOKEN);
 job.start();
 jobHeartbeat.start();
+app.listen(port);
+console.log(`demstonks listening on ${port}`);

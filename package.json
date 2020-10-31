@@ -14,9 +14,11 @@
   "author": "Kevin Lee",
   "license": "MIT",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "cron": "^1.8.2",
     "discord.js": "^12.3.1",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "puppeteer": "^5.3.1",
     "puppeteer-extra": "^3.1.15",
     "puppeteer-extra-plugin-adblocker": "^2.11.6",
