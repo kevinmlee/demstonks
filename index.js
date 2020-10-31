@@ -11,6 +11,7 @@ const logger = require("morgan");
 const express = require("express");
 const bodyParser = require("body-parser");
 var cors = require("cors");
+const http = require("http");
 const Discord = require("discord.js");
 
 const webhookClientRobot = new Discord.WebhookClient(
@@ -134,37 +135,6 @@ const jobHeartbeat = new CronJob({
   runOnInit: true,
 });
 
-/*
-webhookClientReactionListener.on("message", (message) => {
-  message.react("👍").then(() => message.react("👎"));
-
-  const filter = (reaction, user) => {
-    return (
-      ["👍", "👎"].includes(reaction.emoji.name) &&
-      user.id === message.author.id
-    );
-  };
-
-  message
-    .awaitReactions(filter, { max: 1, time: 60000, errors: ["time"] })
-    .then((collected) => {
-      const reaction = collected.first();
-
-      if (reaction.emoji.name === "👍") {
-        message.reply("you reacted with a thumbs up.");
-      } else {
-        message.reply("you reacted with a thumbs down.");
-      }
-    })
-    .catch((collected) => {
-      console.log(`After a minute, only ${collected.size} out of 4 reacted.`);
-      message.reply(
-        "you didn't react with neither a thumbs up, nor a thumbs down."
-      );
-    });
-});
-*/
-
 webhookClientReactionListener.on(
   "messageReactionAdd",
   async (reaction, user) => {
@@ -247,6 +217,32 @@ webhookClientReactionListener.on("message", (message) => {
 webhookClientReactionListener.once("ready", () => {
   console.log("stonkbot ready to annoy people!");
 });
+
+function startKeepAlive() {
+  setInterval(function () {
+    var options = {
+      host: "demstonks.herokuapp.com",
+      port: 80,
+      path: "/",
+    };
+    http
+      .get(options, function (res) {
+        res.on("data", function (chunk) {
+          try {
+            // optional logging... disable after it's working
+            console.log("HEROKU RESPONSE: " + chunk);
+          } catch (err) {
+            console.log(err.message);
+          }
+        });
+      })
+      .on("error", function (err) {
+        console.log("Error: " + err.message);
+      });
+  }, 20 * 60 * 1000); // load every 20 minutes
+}
+
+startKeepAlive();
 
 // initialize
 webhookClientReactionListener.login(process.env.DEMSTONKS_BOT_APP_TOKEN);
