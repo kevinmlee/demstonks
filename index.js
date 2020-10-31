@@ -169,10 +169,52 @@ webhookClientReactionListener.on(
     console.log(`${reaction.count} user(s) have reacted to this message.`);
     console.log(`${reaction.emoji.name} emoji added by "${user.username}".`);
 
+    webhookClientReactionListener.users.cache.get(user.id).send(`
+      Hey ${user.username}! 
+      
+      You've subscribed to notifications for this: ${reaction.emoji.name}.
+    `);
+
     /*
-    if (reaction.emoji.name === "rtx3070")
-    else if (reaction.emoji.name === "rtx3080")
-    else if (reaction.emoji.name === "rtx3090")
+    Handle subscription process
+    if role does not exist for emoji, create new role
+    assign user to role
+    */
+
+    //console.log(reaction.users);
+  }
+);
+
+webhookClientReactionListener.on(
+  "messageReactionRemove",
+  async (reaction, user) => {
+    // When we receive a reaction we check if the reaction is partial or not
+    if (reaction.partial) {
+      // If the message this reaction belongs to was removed the fetching might result in an API error, which we need to handle
+      try {
+        await reaction.fetch();
+      } catch (error) {
+        console.error(
+          "Something went wrong when fetching the message: ",
+          error
+        );
+        // Return as `reaction.message.author` may be undefined/null
+        return;
+      }
+    }
+    // Now the message has been cached and is fully available
+    console.log(`${reaction.count} user(s) have reacted to this message.`);
+    console.log(`${reaction.emoji.name} emoji added by "${user.username}".`);
+
+    webhookClientReactionListener.users.cache.get(user.id).send(`
+      Hey ${user.username}! 
+      
+      Just letting you know that you've just unsubscribed to notifications for this: ${reaction.emoji.name}.
+    `);
+
+    /*
+    Handle removal of subscription
+    unassign user from role
     */
 
     //console.log(reaction.users);
@@ -180,16 +222,16 @@ webhookClientReactionListener.on(
     console.log(user);
   }
 );
+
 webhookClientReactionListener.on("message", (message) => {
   console.log(message.content);
 });
 
-// when the client is ready, run this code
-// this event will only trigger one time after logging in
 webhookClientReactionListener.once("ready", () => {
-  console.log("stonkbot Ready!");
+  console.log("stonkbot ready to annoy people!");
 });
 
+// initialize
 webhookClientReactionListener.login(process.env.DEMSTONKS_BOT_APP_TOKEN);
 job.start();
-//jobHeartbeat.start();
+jobHeartbeat.start();
