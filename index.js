@@ -49,6 +49,8 @@ const scrape = (url) => {
       let message = "";
 
       const page = await browser.newPage();
+      // Configure the navigation timeout
+      await page.setDefaultNavigationTimeout(0);
       await page.goto(url, { waitUntil: "domcontentloaded", timeout: 15000 });
       await page
         .waitForSelector(".add-to-cart-button")
