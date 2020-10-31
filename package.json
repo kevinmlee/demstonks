@@ -7,7 +7,7 @@
     "nvidia": "./index.js"
   },
   "scripts": {
-    "server": "node server.js",
+    "server": "node index.js",
     "start": "npm run server",
     "heroku-postbuild": "npm run build"
   },
