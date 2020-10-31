@@ -8,7 +8,6 @@ puppeteer.use(StealthPlugin());
 const AdblockerPlugin = require("puppeteer-extra-plugin-adblocker");
 puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
 const Discord = require("discord.js");
-const config = require("./config.json");
 
 const webhookClientRobot = new Discord.WebhookClient(
   process.env.DEMSTONKS_CLIENT_ID,
@@ -191,6 +190,6 @@ webhookClientReactionListener.once("ready", () => {
   console.log("stonkbot Ready!");
 });
 
-webhookClientReactionListener.login(config.token);
+webhookClientReactionListener.login(process.env.DEMSTONKS_BOT_APP_TOKEN);
 job.start();
 //jobHeartbeat.start();
