@@ -1,0 +1,1 @@
+heroku scale worker=1
