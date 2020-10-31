@@ -8,38 +8,21 @@ puppeteer.use(StealthPlugin());
 const AdblockerPlugin = require("puppeteer-extra-plugin-adblocker");
 puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
 const Discord = require("discord.js");
+const config = require("./config.json");
+
 const webhookClientRobot = new Discord.WebhookClient(
   process.env.DEMSTONKS_CLIENT_ID,
   process.env.DEMSTONKS_BOT_TOKEN
 );
-const webhookClientStefbot = new Discord.WebhookClient(
-  process.env.DEMSTONKS_CLIENT_ID,
-  process.env.DEMSTONKS_BOT_TOKEN
-);
-const webhookClientHeartbeat = new Discord.WebhookClient(
-  process.env.DEMSTONKS_CLIENT_ID,
-  process.env.DEMSTONKS_BOT_TOKEN
-);
-
-/*
-let message = "I am starting up...";
-const embed = new Discord.MessageEmbed()
-  .setTitle("NVIDIA GeForce RTX 3080 NBB scraper is starting...")
-  // .addField("Inline field title", "Some value here", true)
-  // .setFooter("Some footer text here", "https://i.imgur.com/wSTFkRM.png")
-  .setTimestamp()
-  .setDescription(message)
-  .setColor("#ffa500");
-
-webhookClientHeartbeat.send("", {
-  username: "Heartbeat Checker",
-  avatarURL: "https://duckduckgo.com/i/46055555.png",
-  embeds: [embed],
+const webhookClientReactionListener = new Discord.Client({
+  partials: ["MESSAGE", "CHANNEL", "REACTION"],
 });
-*/
+const webhookClientHeartbeat = new Discord.WebhookClient(
+  process.env.DEMSTONKS_HEARTBEAT_ID,
+  process.env.DEMSTONKS_HEARTBEAT_TOKEN
+);
 
 const scrape = (url) => {
-  //console.log("checking www.notebooksbilliger.de");
   return new Promise(async (resolve, reject) => {
     let browser = null;
     let dataObj = {};
@@ -70,42 +53,6 @@ const scrape = (url) => {
         message = dataObj["available"].toLowerCase();
       }
 
-      /*if (message.toLowerCase() === "sold out") {
-        const embed = await new Discord.MessageEmbed()
-          .setTitle("NVIDIA GeForce RTX 3080")
-          .addField("URL", url, true)
-          .addField("Store", "bestbuy.com", true)
-          .addField("Brand", "NVIDIA", true)
-          .addField("Model", "3080 Founders Edition", true)
-          .setDescription(message)
-          .setTimestamp()
-          .setColor("#ff0000");
-
-        await webhookClientStefbot.send("Just checked.", {
-          username: "stonkbot",
-          avatarURL: "https://duckduckgo.com/i/46055555.png",
-          embeds: [embed],
-        });
-      }*/
-      /*
-      if (message.toLowerCase() === "coming soon") {
-        const embed = await new Discord.MessageEmbed()
-          .setTitle("NVIDIA GeForce RTX 3080")
-          .addField("URL", url, true)
-          .addField("Store", "bestbuy.com", true)
-          .addField("Brand", "NVIDIA", true)
-          .addField("Model", "3080 Founders Edition", true)
-          .setDescription(message)
-          .setTimestamp()
-          .setColor("#ff0000");
-
-        await webhookClientStefbot.send("Just checked.", {
-          username: "stonkbot",
-          avatarURL: "https://duckduckgo.com/i/46055555.png",
-          embeds: [embed],
-        });
-      } 
-      */
       if (
         message.toLowerCase() !== "coming soon" &&
         message.toLowerCase() !== "sold out"
@@ -145,7 +92,7 @@ const url =
 const job = new CronJob({
   cronTime: "0 */1 * * * *",
   onTick: async function () {
-    await console.log("***You will see this message every 1 minutes ***\n");
+    await console.log("\n***You will see this message every 1 minutes ***\n");
     await scrape(url);
   },
   start: true,
@@ -167,9 +114,83 @@ const jobHeartbeat = new CronJob({
       embeds: [embed],
     });
   },
-  start: true,
-  runOnInit: true,
+  start: false,
+  runOnInit: false,
 });
 
+/*
+webhookClientReactionListener.on("message", (message) => {
+  message.react("👍").then(() => message.react("👎"));
+
+  const filter = (reaction, user) => {
+    return (
+      ["👍", "👎"].includes(reaction.emoji.name) &&
+      user.id === message.author.id
+    );
+  };
+
+  message
+    .awaitReactions(filter, { max: 1, time: 60000, errors: ["time"] })
+    .then((collected) => {
+      const reaction = collected.first();
+
+      if (reaction.emoji.name === "👍") {
+        message.reply("you reacted with a thumbs up.");
+      } else {
+        message.reply("you reacted with a thumbs down.");
+      }
+    })
+    .catch((collected) => {
+      console.log(`After a minute, only ${collected.size} out of 4 reacted.`);
+      message.reply(
+        "you didn't react with neither a thumbs up, nor a thumbs down."
+      );
+    });
+});
+*/
+
+webhookClientReactionListener.on(
+  "messageReactionAdd",
+  async (reaction, user) => {
+    // When we receive a reaction we check if the reaction is partial or not
+    if (reaction.partial) {
+      // If the message this reaction belongs to was removed the fetching might result in an API error, which we need to handle
+      try {
+        await reaction.fetch();
+      } catch (error) {
+        console.error(
+          "Something went wrong when fetching the message: ",
+          error
+        );
+        // Return as `reaction.message.author` may be undefined/null
+        return;
+      }
+    }
+    // Now the message has been cached and is fully available
+    console.log(`${reaction.count} user(s) have reacted to this message.`);
+    console.log(`${reaction.emoji.name} emoji added by "${user.username}".`);
+
+    /*
+    if (reaction.emoji.name === "rtx3070")
+    else if (reaction.emoji.name === "rtx3080")
+    else if (reaction.emoji.name === "rtx3090")
+    */
+
+    //console.log(reaction.users);
+
+    console.log(user);
+  }
+);
+webhookClientReactionListener.on("message", (message) => {
+  console.log(message.content);
+});
+
+// when the client is ready, run this code
+// this event will only trigger one time after logging in
+webhookClientReactionListener.once("ready", () => {
+  console.log("stonkbot Ready!");
+});
+
+webhookClientReactionListener.login(config.token);
 job.start();
-jobHeartbeat.start();
+//jobHeartbeat.start();
