@@ -9,7 +9,7 @@
   "scripts": {
     "server": "node index.js",
     "start": "npm run server",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm install && npm run build"
   },
   "author": "Kevin Lee",
   "license": "MIT",
