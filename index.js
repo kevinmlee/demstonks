@@ -8,7 +8,7 @@ puppeteer.use(StealthPlugin());
 const AdblockerPlugin = require("puppeteer-extra-plugin-adblocker");
 puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
 const Discord = require("discord.js");
-const app = require('./src/util/keepHerokuAlive');
+const app = require("./src/util/keepHerokuAlive");
 
 const webhookClientRobot = new Discord.WebhookClient(
   process.env.DEMSTONKS_CLIENT_ID,
@@ -150,13 +150,29 @@ webhookClientReactionListener.on(
       You've subscribed to notifications for this: ${reaction.emoji.name}.
     `);
 
-    /*
-    Handle subscription process
-    if role does not exist for emoji, create new role
-    assign user to role
-    */
+    //Handle subscription process
+    const guild = await webhookClientReactionListener.guilds.cache.get(
+      "641091138123595789"
+    );
+    let roleName = reaction.emoji.name;
+    let role = guild.roles.cache.find((x) => x.name === roleName);
 
-    //console.log(reaction.users);
+    if (!role) {
+      // Role doesn't exist, safe to create a new role
+      guild.roles
+        .create({
+          data: {
+            name: roleName,
+            color: "#B8BBBE",
+          },
+        })
+        .then(console.log)
+        .catch(console.error);
+    }
+
+    //assign user to role
+    //let existingRole = guild.roles.cache.find((role) => role.name === roleName);
+    //user.addRole(existingRole);
   }
 );
 
@@ -210,4 +226,3 @@ webhookClientReactionListener.once("ready", () => {
 webhookClientReactionListener.login(process.env.DEMSTONKS_BOT_APP_TOKEN);
 job.start();
 jobHeartbeat.start();
-
