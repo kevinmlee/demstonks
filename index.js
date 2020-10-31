@@ -21,6 +21,7 @@ const webhookClientHeartbeat = new Discord.WebhookClient(
   process.env.DEMSTONKS_BOT_TOKEN
 );
 
+/*
 let message = "I am starting up...";
 const embed = new Discord.MessageEmbed()
   .setTitle("NVIDIA GeForce RTX 3080 NBB scraper is starting...")
@@ -35,9 +36,10 @@ webhookClientHeartbeat.send("", {
   avatarURL: "https://duckduckgo.com/i/46055555.png",
   embeds: [embed],
 });
+*/
 
 const scrape = (url) => {
-  console.log("checking www.notebooksbilliger.de");
+  //console.log("checking www.notebooksbilliger.de");
   return new Promise(async (resolve, reject) => {
     let browser = null;
     let dataObj = {};
@@ -51,11 +53,13 @@ const scrape = (url) => {
 
       const page = await browser.newPage();
       await page.goto(url, { waitUntil: "domcontentloaded", timeout: 15000 });
-      await page.waitForSelector(".soldOut").catch(() => (message = ""));
+      await page
+        .waitForSelector(".add-to-cart-button")
+        .catch(() => (message = ""));
       if (message === "") {
         dataObj["showTitle"] = await page.title();
         dataObj["available"] = await page.evaluate(() => {
-          let button = document.querySelector(".soldOut").innerText;
+          let button = document.querySelector(".add-to-cart-button").innerText;
           return button;
         });
         let time = new Date();
@@ -66,37 +70,59 @@ const scrape = (url) => {
         message = dataObj["available"].toLowerCase();
       }
 
-      if (message === "dieses produkt ist leider ausverkauft.") {
+      /*if (message.toLowerCase() === "sold out") {
         const embed = await new Discord.MessageEmbed()
           .setTitle("NVIDIA GeForce RTX 3080")
           .addField("URL", url, true)
-          .addField("Store", "Notebooksbilliger.de", true)
-          .addField("Brand", "Nvidia", true)
+          .addField("Store", "bestbuy.com", true)
+          .addField("Brand", "NVIDIA", true)
           .addField("Model", "3080 Founders Edition", true)
           .setDescription(message)
           .setTimestamp()
           .setColor("#ff0000");
 
         await webhookClientStefbot.send("Just checked.", {
-          username: "stefbot",
+          username: "stonkbot",
           avatarURL: "https://duckduckgo.com/i/46055555.png",
           embeds: [embed],
         });
-      } else {
-        message =
-          "https://www.notebooksbilliger.de/nvidia+geforce+rtx+3080+founders+edition+683301";
+      }*/
+      /*
+      if (message.toLowerCase() === "coming soon") {
         const embed = await new Discord.MessageEmbed()
           .setTitle("NVIDIA GeForce RTX 3080")
           .addField("URL", url, true)
-          .addField("Store", "Notebooksbilliger.de", true)
-          .addField("Brand", "Nvidia", true)
+          .addField("Store", "bestbuy.com", true)
+          .addField("Brand", "NVIDIA", true)
+          .addField("Model", "3080 Founders Edition", true)
+          .setDescription(message)
+          .setTimestamp()
+          .setColor("#ff0000");
+
+        await webhookClientStefbot.send("Just checked.", {
+          username: "stonkbot",
+          avatarURL: "https://duckduckgo.com/i/46055555.png",
+          embeds: [embed],
+        });
+      } 
+      */
+      if (
+        message.toLowerCase() !== "coming soon" &&
+        message.toLowerCase() !== "sold out"
+      ) {
+        message = url;
+        const embed = await new Discord.MessageEmbed()
+          .setTitle("NVIDIA GeForce RTX 3080")
+          .addField("URL", url, true)
+          .addField("Store", "bestbuy.com", true)
+          .addField("Brand", "NVIDIA", true)
           .addField("Model", "3080 Founders Edition", true)
           .setDescription(message)
           .setTimestamp()
           .setColor("#7cfc00");
 
         await webhookClientRobot.send("<@&760440519708639242> Just checked.", {
-          username: "robot",
+          username: "stonkbot",
           avatarURL: "https://duckduckgo.com/i/46055555.png",
           embeds: [embed],
         });
@@ -113,7 +139,8 @@ const scrape = (url) => {
 
 const url =
   // "https://www.nvidia.com/de-de/geforce/graphics-cards/30-series/rtx-3080/?nvid=nv-int-gfhm-33950";
-  "https://www.notebooksbilliger.de/nvidia+geforce+rtx+3080+founders+edition+683301";
+  //"https://www.notebooksbilliger.de/nvidia+geforce+rtx+3080+founders+edition+683301";
+  "https://www.bestbuy.com/site/nvidia-geforce-rtx-3080-10gb-gddr6x-pci-express-4-0-graphics-card-titanium-and-black/6429440.p?skuId=6429440&ref=186&loc=nvidia_6429440";
 
 const job = new CronJob({
   cronTime: "0 */1 * * * *",
@@ -130,12 +157,12 @@ const jobHeartbeat = new CronJob({
   onTick: async function () {
     message = "I am up and running :)";
     const embed = await new Discord.MessageEmbed()
-      .setTitle("NVIDIA GeForce RTX 3080 NBB scraper is healthy")
+      .setTitle("stonkbot is healthy")
       .setTimestamp()
       .setDescription(message)
       .setColor("#0099ff");
     await webhookClientHeartbeat.send("", {
-      username: "Heartbeat Checker",
+      username: "stonkbot",
       avatarURL: "https://duckduckgo.com/i/46055555.png",
       embeds: [embed],
     });
