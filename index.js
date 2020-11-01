@@ -10,6 +10,7 @@ puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
 const Discord = require("discord.js");
 const app = require("./src/util/keepHerokuAlive");
 
+const SERVER_ID = "641091138123595789";
 const webhookClientRobot = new Discord.WebhookClient(
   process.env.DEMSTONKS_CLIENT_ID,
   process.env.DEMSTONKS_BOT_TOKEN
@@ -145,14 +146,12 @@ webhookClientReactionListener.on(
     console.log(`${reaction.emoji.name} emoji added by "${user.username}".`);
 
     webhookClientReactionListener.users.cache.get(user.id).send(`
-      Hey ${user.username}! 
-      
-      You've subscribed to notifications for this: ${reaction.emoji.name}.
+      Hey ${user.username}! You've subscribed to notifications for this: ${reaction.emoji.name}.
     `);
 
     //Handle subscription process
     const guild = await webhookClientReactionListener.guilds.cache.get(
-      "641091138123595789"
+      SERVER_ID
     );
     let roleName = reaction.emoji.name;
     let role = guild.roles.cache.find((x) => x.name === roleName);
@@ -171,8 +170,8 @@ webhookClientReactionListener.on(
     }
 
     //assign user to role
-    //let existingRole = guild.roles.cache.find((role) => role.name === roleName);
-    //user.addRole(existingRole);
+    let member = guild.members.cache.find((member) => member.id === user.id);
+    member.roles.add(role);
   }
 );
 
@@ -198,19 +197,21 @@ webhookClientReactionListener.on(
     console.log(`${reaction.emoji.name} emoji added by "${user.username}".`);
 
     webhookClientReactionListener.users.cache.get(user.id).send(`
-      Hey ${user.username}! 
-      
-      Just letting you know that you've just unsubscribed to notifications for this: ${reaction.emoji.name}.
+      Hey ${user.username}! Just letting you know that you've just unsubscribed to notifications for this: ${reaction.emoji.name}.
     `);
 
-    /*
-    Handle removal of subscription
-    unassign user from role
-    */
+    //Handle subscription process
+    const guild = await webhookClientReactionListener.guilds.cache.get(
+      SERVER_ID
+    );
+    let roleName = reaction.emoji.name;
+    let role = guild.roles.cache.find((x) => x.name === roleName);
 
-    //console.log(reaction.users);
-
-    console.log(user);
+    if (role) {
+      //assign user to role
+      let member = guild.members.cache.find((member) => member.id === user.id);
+      member.roles.remove(role);
+    }
   }
 );
 
