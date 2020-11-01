@@ -1,6 +1,10 @@
 const Discord = require('discord.js');
 
-const { DEMSTONKS_BOT_APP_TOKEN, SERVER_ID } = require('../../../constants');
+const {
+  DEMSTONKS_BOT_APP_TOKEN,
+  SERVER_ID,
+  ALLOWED_EMOJIS,
+} = require('../../../constants');
 
 const webhookClientReactionListener = new Discord.Client({
   partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
@@ -35,10 +39,9 @@ webhookClientReactionListener.on(
     const guild = await webhookClientReactionListener.guilds.cache.get(
       SERVER_ID
     );
-    let roleName = reaction.emoji.name;
-    let role = guild.roles.cache.find((x) => x.name === roleName);
+    let role = guild.roles.cache.find((x) => x.name === reaction.emoji.name);
 
-    if (!role) {
+    if (!role && ALLOWED_EMOJIS.includes(reaction.emoji.name)) {
       // Role doesn't exist, safe to create a new role
       guild.roles
         .create({

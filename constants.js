@@ -10,6 +10,7 @@ const DEMSTONKS_HEARTBEAT_ID = process.env.DEMSTONKS_HEARTBEAT_ID || null;
 const DEMSTONKS_HEARTBEAT_TOKEN = process.env.DEMSTONKS_HEARTBEAT_TOKEN || null;
 const DEMSTONKS_BOT_APP_TOKEN = process.env.DEMSTONKS_BOT_APP_TOKEN || null;
 const SERVER_ID = '641091138123595789';
+const ALLOWED_EMOJIS = ['rtx3070', 'rtx3080', 'rtx3090'];
 
 module.exports = {
   PORT,
@@ -20,4 +21,5 @@ module.exports = {
   DEMSTONKS_HEARTBEAT_TOKEN,
   DEMSTONKS_BOT_APP_TOKEN,
   SERVER_ID,
+  ALLOWED_EMOJIS,
 };
