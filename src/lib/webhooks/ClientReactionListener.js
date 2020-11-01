@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const { SERVER_ID } = require('../../../constants');
 
 const webhookClientReactionListener = new Discord.Client({
   partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
@@ -26,18 +27,32 @@ webhookClientReactionListener.on(
     console.log(`${reaction.emoji.name} emoji added by "${user.username}".`);
 
     webhookClientReactionListener.users.cache.get(user.id).send(`
-      Hey ${user.username}! 
-      
-      You've subscribed to notifications for this: ${reaction.emoji.name}.
+      Hey ${user.username}! You've subscribed to notifications for this: ${reaction.emoji.name}.
     `);
 
-    /*
-    Handle subscription process
-    if role does not exist for emoji, create new role
-    assign user to role
-    */
+    //Handle subscription process
+    const guild = await webhookClientReactionListener.guilds.cache.get(
+      SERVER_ID
+    );
+    let roleName = reaction.emoji.name;
+    let role = guild.roles.cache.find((x) => x.name === roleName);
 
-    //console.log(reaction.users);
+    if (!role) {
+      // Role doesn't exist, safe to create a new role
+      guild.roles
+        .create({
+          data: {
+            name: roleName,
+            color: '#B8BBBE',
+          },
+        })
+        .then(console.log)
+        .catch(console.error);
+    }
+
+    //assign user to role
+    let member = guild.members.cache.find((member) => member.id === user.id);
+    member.roles.add(role);
   }
 );
 
@@ -63,19 +78,21 @@ webhookClientReactionListener.on(
     console.log(`${reaction.emoji.name} emoji added by "${user.username}".`);
 
     webhookClientReactionListener.users.cache.get(user.id).send(`
-      Hey ${user.username}! 
-      
-      Just letting you know that you've just unsubscribed to notifications for this: ${reaction.emoji.name}.
+      Hey ${user.username}! You've subscribed to notifications for this: ${reaction.emoji.name}.
     `);
 
-    /*
-    Handle removal of subscription
-    unassign user from role
-    */
+    //Handle subscription process
+    const guild = await webhookClientReactionListener.guilds.cache.get(
+      SERVER_ID
+    );
+    let roleName = reaction.emoji.name;
+    let role = guild.roles.cache.find((x) => x.name === roleName);
 
-    //console.log(reaction.users);
-
-    console.log(user);
+    if (role) {
+      //assign user to role
+      let member = guild.members.cache.find((member) => member.id === user.id);
+      member.roles.remove(role);
+    }
   }
 );
 
