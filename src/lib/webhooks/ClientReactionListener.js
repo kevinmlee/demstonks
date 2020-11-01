@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const { DEMSTONKS_BOT_APP_TOKEN } = require('../../../constants');
 
 const webhookClientReactionListener = new Discord.Client({
   partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
@@ -88,4 +89,4 @@ webhookClientReactionListener.once('ready', () => {
 });
 
 // initialize
-webhookClientReactionListener.login(process.env.DEMSTONKS_BOT_APP_TOKEN);
+webhookClientReactionListener.login(DEMSTONKS_BOT_APP_TOKEN);
