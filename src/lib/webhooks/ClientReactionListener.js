@@ -31,10 +31,6 @@ webhookClientReactionListener.on(
     console.log(`${reaction.count} user(s) have reacted to this message.`);
     console.log(`${reaction.emoji.name} emoji added by "${user.username}".`);
 
-    webhookClientReactionListener.users.cache.get(user.id).send(`
-      Hey ${user.username}! You've subscribed to notifications for this: ${reaction.emoji.name}.
-    `);
-
     //Handle subscription process
     const guild = await webhookClientReactionListener.guilds.cache.get(
       SERVER_ID
@@ -55,8 +51,14 @@ webhookClientReactionListener.on(
     }
 
     //assign user to role
-    let member = guild.members.cache.find((member) => member.id === user.id);
-    member.roles.add(role);
+    if (ALLOWED_EMOJIS.includes(reaction.emoji.name)) {
+      let member = guild.members.cache.find((member) => member.id === user.id);
+      member.roles.add(role);
+
+      webhookClientReactionListener.users.cache.get(user.id).send(`
+        Hey ${user.username}! You've subscribed to notifications for this: ${reaction.emoji.name}.
+      `);
+    }
   }
 );
 
@@ -78,21 +80,20 @@ webhookClientReactionListener.on(
       }
     }
 
-    webhookClientReactionListener.users.cache.get(user.id).send(`
-      Hey ${user.username}! Just letting you know that you've just unsubscribed to notifications for this: ${reaction.emoji.name}.
-    `);
-
     //Handle subscription process
     const guild = await webhookClientReactionListener.guilds.cache.get(
       SERVER_ID
     );
-    let roleName = reaction.emoji.name;
-    let role = guild.roles.cache.find((x) => x.name === roleName);
+    let role = guild.roles.cache.find((x) => x.name === reaction.emoji.name);
 
     if (role) {
       //assign user to role
       let member = guild.members.cache.find((member) => member.id === user.id);
       member.roles.remove(role);
+
+      webhookClientReactionListener.users.cache.get(user.id).send(`
+        Hey ${user.username}! Just letting you know that you've just unsubscribed to notifications for this: ${reaction.emoji.name}.
+      `);
     }
   }
 );
