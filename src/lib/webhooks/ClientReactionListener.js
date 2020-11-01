@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const { SERVER_ID } = require('../../../constants');
 
 const webhookClientReactionListener = new Discord.Client({
   partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
@@ -26,9 +27,7 @@ webhookClientReactionListener.on(
     console.log(`${reaction.emoji.name} emoji added by "${user.username}".`);
 
     webhookClientReactionListener.users.cache.get(user.id).send(`
-      Hey ${user.username}! 
-      
-      You've subscribed to notifications for this: ${reaction.emoji.name}.
+      Hey ${user.username}! You've subscribed to notifications for this: ${reaction.emoji.name}.
     `);
 
     //Handle subscription process
