@@ -74,12 +74,9 @@ webhookClientReactionListener.on(
         return;
       }
     }
-    // Now the message has been cached and is fully available
-    console.log(`${reaction.count} user(s) have reacted to this message.`);
-    console.log(`${reaction.emoji.name} emoji added by "${user.username}".`);
 
     webhookClientReactionListener.users.cache.get(user.id).send(`
-      Hey ${user.username}! You've subscribed to notifications for this: ${reaction.emoji.name}.
+      Hey ${user.username}! Just letting you know that you've just unsubscribed to notifications for this: ${reaction.emoji.name}.
     `);
 
     //Handle subscription process
@@ -96,10 +93,6 @@ webhookClientReactionListener.on(
     }
   }
 );
-
-webhookClientReactionListener.on('message', (message) => {
-  console.log(message.content);
-});
 
 webhookClientReactionListener.once('ready', () => {
   console.log('stonkbot ready to annoy people!');
