@@ -89,13 +89,46 @@ const getSubscribedMembers = async (guild) => {
 
   if (guild && guild.roles) {
     thirtySeventy = Array.from(
-      await guild.roles.cache.get(THIRTY_SEVENTY_ROLE).members.keys()
+      //await guild.roles.cache.get(THIRTY_SEVENTY_ROLE).members.keys()
+      await guild.members
+        .fetch()
+        .then((response) => {
+          let membersWithRole = [];
+          response.map((member) => {
+            if (member._roles.includes(THIRTY_SEVENTY_ROLE))
+              membersWithRole.push(member.user.id);
+          });
+          return membersWithRole;
+        })
+        .catch(console.error)
     );
     thirtyEighty = Array.from(
-      await guild.roles.cache.get(THIRTY_EIGHTY_ROLE).members.keys()
+      //await guild.roles.cache.get(THIRTY_EIGHTY_ROLE).members.keys()
+      await guild.members
+        .fetch()
+        .then((response) => {
+          let membersWithRole = [];
+          response.map((member) => {
+            if (member._roles.includes(THIRTY_EIGHTY_ROLE))
+              membersWithRole.push(member.user.id);
+          });
+          return membersWithRole;
+        })
+        .catch(console.error)
     );
     thirtyNinety = Array.from(
-      await guild.roles.cache.get(THIRTY_NINETY_ROLE).members.keys()
+      //await guild.roles.cache.get(THIRTY_NINETY_ROLE).members.keys()
+      await guild.members
+        .fetch()
+        .then((response) => {
+          let membersWithRole = [];
+          response.map((member) => {
+            if (member._roles.includes(THIRTY_NINETY_ROLE))
+              membersWithRole.push(member.user.id);
+          });
+          return membersWithRole;
+        })
+        .catch(console.error)
     );
 
     obj['3070'] = thirtySeventy;
