@@ -52,8 +52,8 @@ const scrape = async (store, url, storeButton, gpu, membersObj) => {
     }
 
     if (
-      message.toLowerCase() == 'coming soon' ||
-      message.toLowerCase() == 'sold out'
+      message.toLowerCase() !== 'coming soon' &&
+      message.toLowerCase() !== 'sold out'
     ) {
       message = url;
       const embed = await new Discord.MessageEmbed()
