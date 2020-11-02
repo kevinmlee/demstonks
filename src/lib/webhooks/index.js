@@ -1,9 +1,9 @@
-const webhookClientReactionListener = require('./ClientReactionListener');
-const webhookClientRobot = require('./ClientRobot');
-const webhookClientHeartbeat = require('./ClientHeartbeat');
+const WebhookClientReactionListener = require('./ClientReactionListener');
+const WebhookClientRobot = require('./ClientRobot');
+const WebhookClientHeartbeat = require('./ClientHeartbeat');
 
 module.exports = {
-  webhookClientHeartbeat,
-  webhookClientRobot,
-  webhookClientReactionListener,
+  WebhookClientHeartbeat,
+  WebhookClientRobot,
+  WebhookClientReactionListener,
 };
