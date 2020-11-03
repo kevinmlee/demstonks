@@ -31,7 +31,7 @@ const scrape = async (store, url, storeButton, gpu, membersObj) => {
     const page = await browser.newPage();
     // Configure the navigation timeout
     await page.setDefaultNavigationTimeout(0);
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 0 });
 
     await page
       .waitForSelector(storeButton)
