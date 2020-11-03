@@ -17,8 +17,6 @@ const {
 } = require('../../constants');
 const os = require('os');
 
-let browser = null;
-
 const getMemoryInfo = () => {
   const mem = {
     free: os.freemem(),
@@ -32,13 +30,20 @@ const getMemoryInfo = () => {
 const scrape = async (store, url, storeButton, gpu, membersObj) => {
   let message = '';
   const dataObj = {};
+  let browser = null;
 
   try {
+    browser = await puppeteer.launch({
+      headless: true,
+      ignoreHTTPSErrors: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+
     const page = await browser.newPage();
 
     // Configure the navigation timeout
     await page.setDefaultNavigationTimeout(0);
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 0 });
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
     await page
       .waitForSelector(storeButton)
@@ -85,10 +90,10 @@ const scrape = async (store, url, storeButton, gpu, membersObj) => {
     }
 
     console.log('Memory usage: ', getMemoryInfo());
-
-    await page.close();
   } catch (e) {
     console.error(e);
+  } finally {
+    await browser.close();
   }
 };
 
@@ -127,11 +132,6 @@ const getSubscribedMembers = async (guild) => {
 const scrapeSites = async () => {
   const guild = await WebhookClientReactionListener.guilds.cache.get(SERVER_ID);
   const members = await getSubscribedMembers(guild);
-  browser = await puppeteer.launch({
-    headless: true,
-    ignoreHTTPSErrors: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  });
 
   if (members) {
     for (let url of bestbuy['3070']) {
@@ -144,8 +144,6 @@ const scrapeSites = async () => {
       await scrape('bestbuy', url, bestbuy.button, '3090', members);
     }
   }
-
-  browser.close();
 };
 
 module.exports = scrapeSites;
