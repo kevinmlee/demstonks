@@ -15,8 +15,19 @@ const {
   THIRTY_NINETY_ROLE,
   THIRTY_SEVENTY_ROLE,
 } = require('../../constants');
+const os = require('os');
 
 let browser = null;
+
+const getMemoryInfo = () => {
+  const mem = {
+    free: os.freemem(),
+    total: os.totalmem(),
+  };
+  mem.percent = (mem.free * 100) / mem.total;
+
+  return mem;
+};
 
 const scrape = async (store, url, storeButton, gpu, membersObj) => {
   let message = '';
@@ -72,6 +83,8 @@ const scrape = async (store, url, storeButton, gpu, membersObj) => {
           });
       }
     }
+
+    console.log('Memory usage: ', getMemoryInfo());
 
     await page.close();
   } catch (e) {
