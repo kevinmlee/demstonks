@@ -11,7 +11,6 @@ const {
 const scrapeSites = require('./src/lib/scrapeSites');
 
 const job = new CronJob({
-  //cronTime: '0 */1 * * * *',
   cronTime: '0 */3 * * * *',
   onTick: async function () {
     await console.log('\n***You will see this message every 3 minutes ***\n');
