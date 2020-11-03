@@ -16,19 +16,15 @@ const {
   THIRTY_SEVENTY_ROLE,
 } = require('../../constants');
 
+let browser = null;
+
 const scrape = async (store, url, storeButton, gpu, membersObj) => {
-  let browser = null;
   let message = '';
   const dataObj = {};
 
   try {
-    browser = await puppeteer.launch({
-      headless: true,
-      ignoreHTTPSErrors: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
-
     const page = await browser.newPage();
+
     // Configure the navigation timeout
     await page.setDefaultNavigationTimeout(0);
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 0 });
@@ -76,10 +72,10 @@ const scrape = async (store, url, storeButton, gpu, membersObj) => {
           });
       }
     }
+
+    await page.close();
   } catch (e) {
     console.error(e);
-  } finally {
-    browser.close();
   }
 };
 
@@ -117,8 +113,12 @@ const getSubscribedMembers = async (guild) => {
 
 const scrapeSites = async () => {
   const guild = await WebhookClientReactionListener.guilds.cache.get(SERVER_ID);
-
   const members = await getSubscribedMembers(guild);
+  browser = await puppeteer.launch({
+    headless: true,
+    ignoreHTTPSErrors: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
 
   if (members) {
     for (let url of bestbuy['3070']) {
@@ -131,6 +131,8 @@ const scrapeSites = async () => {
       await scrape('bestbuy', url, bestbuy.button, '3090', members);
     }
   }
+
+  browser.close();
 };
 
 module.exports = scrapeSites;
